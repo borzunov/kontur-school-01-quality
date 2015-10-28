@@ -103,5 +103,28 @@ namespace Markdown
         {
             Elements = elements;
         }
+
+        protected bool Equals(Paragraph other)
+        {
+            return Elements.SequenceEqual(other.Elements);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Paragraph) obj);
+        }
+    }
+
+    public class Document
+    {
+        public readonly List<Paragraph> Paragraphs;
+
+        public Document(List<Paragraph> paragraphs)
+        {
+            Paragraphs = paragraphs;
+        }
     }
 }
