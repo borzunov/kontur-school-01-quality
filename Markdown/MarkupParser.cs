@@ -119,7 +119,7 @@ namespace Markdown
             return newElements;
         }
 
-        public List<IMarkupElement> Parse()
+        public Paragraph Parse()
         {
             var elements = tokens;
             elements = StripWhitespaces(elements);
@@ -129,7 +129,7 @@ namespace Markdown
                 if (tag.Name != CodeTagName)
                     elements = SetTagTypes(elements, tag.Name, true);
             elements = MergeAdjacentTextElements(elements);
-            return elements;
+            return new Paragraph(elements);
         }
     }
 }

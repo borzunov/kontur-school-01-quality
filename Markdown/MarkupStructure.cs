@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Markdown
 {
@@ -94,9 +97,9 @@ namespace Markdown
 
     public class Paragraph
     {
-        public readonly IMarkupElement[] Elements;
+        public readonly List<IMarkupElement> Elements;
 
-        public Paragraph(IMarkupElement[] elements)
+        public Paragraph(List<IMarkupElement> elements)
         {
             Elements = elements;
         }

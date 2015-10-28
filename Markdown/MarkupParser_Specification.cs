@@ -12,12 +12,12 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("   several  words ");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
                 new Text("several"), new Whitespace(), new Text("words"),
-            }, elements);
+            }, paragraph.Elements);
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("_em_ __strong__ `code`");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -35,7 +35,7 @@ namespace Markdown
                 new Tag("strong", TagType.Opening), new Text("strong"), new Tag("strong", TagType.Closing),
                 new Whitespace(),
                 new Tag("code", TagType.Opening), new Text("code"), new Tag("code", TagType.Closing),
-            }, elements);
+            }, paragraph.Elements);
         }
 
         [Test]
@@ -44,12 +44,12 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("unbalanced _tag");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
                 new Text("unbalanced"), new Whitespace(), new Text("_tag"),
-            }, elements);
+            }, paragraph.Elements);
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("`some code` inside`word` evenWith`digit`123");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -72,7 +72,7 @@ namespace Markdown
                 new Text("evenWith"),
                 new Tag("code", TagType.Opening), new Text("digit"), new Tag("code", TagType.Closing),
                 new Text("123"),
-            }, elements);
+            }, paragraph.Elements);
         }
 
 
@@ -85,7 +85,7 @@ namespace Markdown
                 "_underscoresCanOccur _ in_formatting_");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -101,7 +101,7 @@ namespace Markdown
                     new Text("_"), new Whitespace(),
                     new Text("in_formatting"),
                 new Tag("em", TagType.Closing),
-            }, elements);
+            }, paragraph.Elements);
         }
 
         [Test]
@@ -110,7 +110,7 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("_emphasized __strong `code` placed__ here_");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -129,7 +129,7 @@ namespace Markdown
                     new Whitespace(),
                     new Text("here"), 
                 new Tag("em", TagType.Closing),
-            }, elements);
+            }, paragraph.Elements);
         }
 
         [Test]
@@ -138,7 +138,7 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("`_trying_ __to format__`");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -147,7 +147,7 @@ namespace Markdown
                     new Text("__to"), new Whitespace(),
                     new Text("format__"),
                 new Tag("code", TagType.Closing),
-            }, elements);
+            }, paragraph.Elements);
         }
 
 
@@ -157,7 +157,7 @@ namespace Markdown
             var tokenizer = new ParagraphTokenizer("`  many\t\nwhitespaces\t\t`");
 
             var elements = tokenizer.Tokenize();
-            elements = new MarkupParser(elements).Parse();
+            var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
@@ -166,7 +166,7 @@ namespace Markdown
                     new Whitespace(), new Text("whitespaces"),
                     new Whitespace(),
                 new Tag("code", TagType.Closing),
-            }, elements);
+            }, paragraph.Elements);
         }
     }
 }
