@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="DocumentProcessor_Specification.cs" />
     <Compile Include="HtmlFormatter.cs" />
+    <Compile Include="HtmlFormatter_Specification.cs" />
     <Compile Include="MarkupParser_Specification.cs" />
     <Compile Include="MarkupStructure.cs" />
     <Compile Include="DocumentProcessor.cs" />

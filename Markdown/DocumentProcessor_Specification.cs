@@ -7,7 +7,7 @@ namespace Markdown
     class DocumentProcessor_Specification
     {
         [Test]
-        public void process_splitsByTwoNewLinesToNonEmptyParagraphs()
+        public void process_splitsByTwoNewLines_toNonEmptyParagraphs()
         {
             var processor = new DocumentProcessor(
                 "\n\nfirstPar" +

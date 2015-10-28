@@ -8,7 +8,7 @@ namespace Markdown
     public class ParagraphTokenizer_Specification
     {
         [Test]
-        public void tokenize_splitsByWhitespaceGroups()
+        public void tokenize_collapsesWhitespaceGroups()
         {
             var tokenizer = new ParagraphTokenizer("   some  different\nwhite\t spaces");
 

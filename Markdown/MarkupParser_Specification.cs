@@ -7,7 +7,7 @@ namespace Markdown
     class MarkupParser_Specification
     {
         [Test]
-        public void parse_stripsWhitespacesOnSides()
+        public void parse_removesWhitespacesAtTheBeginningAndAtTheEnd()
         {
             var tokenizer = new ParagraphTokenizer("   several  words ");
 
