@@ -61,6 +61,19 @@ namespace Markdown
                 "<em>em</em> <strong>strong</strong> <code>code</code> word_with_digits_123");
         }
 
+
+        [Test]
+        public void formatDocument_rendersNestedTags()
+        {
+            var processor = new DocumentProcessor("_ __ `emStrongCode` __ _");
+
+            var document = processor.Process();
+            var htmlSource = new HtmlFormatter(document).FormatDocument();
+
+            CheckParagraphsPresence(htmlSource,
+                "<em> <strong> <code>emStrongCode</code> </strong> </em>");
+        }
+
         [Test]
         public void formatDocument_rendersSeveralParagraphs()
         {

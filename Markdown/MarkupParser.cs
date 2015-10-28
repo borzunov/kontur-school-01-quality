@@ -30,20 +30,33 @@ namespace Markdown
             return new Text(tag.RawText);
         }
 
-        static bool IsThereWordBorder(List<IMarkupElement> elements, int index, TagType tagType)
+        static bool IsThereWordBreak(IMarkupElement elem, bool atTheEnd)
+        {
+            if (elem is Whitespace)
+                return true;
+            var text = elem as Text;
+            if (text != null && text.Content.Length >= 1)
+            {
+                var adjacentChar = text.Content[atTheEnd ? text.Content.Length - 1 : 0];
+                return !char.IsLetterOrDigit(adjacentChar);
+            }
+            return false;
+        }
+
+        static bool TagCanBeAt(List<IMarkupElement> elements, int index, TagType tagType)
         {
             var paragraphBegin = (index == 0);
             var paragraphEnd = (index == elements.Count - 1);
             return (
                 (
                     tagType == TagType.Opening &&
-                    (paragraphBegin || elements[index - 1] is Whitespace) &&
-                    (!paragraphEnd && elements[index + 1] is Text)
+                    (paragraphBegin || IsThereWordBreak(elements[index - 1], true)) &&
+                    (!paragraphEnd && !(elements[index + 1] is Tag))
                 ) ||
                 (
                     tagType == TagType.Closing &&
-                    (!paragraphBegin && elements[index - 1] is Text) &&
-                    (paragraphEnd || elements[index + 1] is Whitespace)
+                    (!paragraphBegin && !(elements[index - 1] is Tag)) &&
+                    (paragraphEnd || IsThereWordBreak(elements[index + 1], false))
                 ));
         }
 
@@ -60,7 +73,7 @@ namespace Markdown
                 if (tag != null && tag.Name == tagName)
                 {
                     var newTagType = tagOpened ? TagType.Closing : TagType.Opening;
-                    if (requireWordBorders && !IsThereWordBorder(elements, i, newTagType))
+                    if (requireWordBorders && !TagCanBeAt(elements, i, newTagType))
                         newElements.Add(RestoreText(tag));
                     else
                     {

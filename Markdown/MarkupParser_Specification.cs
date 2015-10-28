@@ -7,7 +7,7 @@ namespace Markdown
     class MarkupParser_Specification
     {
         [Test]
-        public void parse_removesWhitespacesAtTheBeginningAndAtTheEnd()
+        public void parse_removesLeadingAndTrailingWhitespaces()
         {
             var tokenizer = new ParagraphTokenizer("   several  words ");
 
@@ -21,20 +21,26 @@ namespace Markdown
         }
 
         [Test]
-        public void parse_setsTagTypes()
+        public void parse_discoversStructureOfDifferentTags()
         {
-            var tokenizer = new ParagraphTokenizer("_em_ __strong__ `code`");
+            var tokenizer = new ParagraphTokenizer("_emphasizedText_ __strongText__ `codeText`");
 
             var elements = tokenizer.Tokenize();
             var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
-                new Tag("em", TagType.Opening), new Text("em"), new Tag("em", TagType.Closing),
+                new Tag("em", TagType.Opening),
+                    new Text("emphasizedText"),
+                new Tag("em", TagType.Closing),
                 new Whitespace(),
-                new Tag("strong", TagType.Opening), new Text("strong"), new Tag("strong", TagType.Closing),
+                new Tag("strong", TagType.Opening),
+                    new Text("strongText"),
+                new Tag("strong", TagType.Closing),
                 new Whitespace(),
-                new Tag("code", TagType.Opening), new Text("code"), new Tag("code", TagType.Closing),
+                new Tag("code", TagType.Opening),
+                    new Text("codeText"),
+                new Tag("code", TagType.Closing),
             }, paragraph.Elements);
         }
 
@@ -53,9 +59,9 @@ namespace Markdown
         }
 
         [Test]
-        public void parse_allowsToUseCodeTagsEverywhere()
+        public void parse_handlesCodeBlocks_everywhere()
         {
-            var tokenizer = new ParagraphTokenizer("`some code` inside`word` evenWith`digit`123");
+            var tokenizer = new ParagraphTokenizer("`justCode` orCodeInsideWordWith`digits`123");
 
             var elements = tokenizer.Tokenize();
             var paragraph = new MarkupParser(elements).Parse();
@@ -63,26 +69,117 @@ namespace Markdown
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
                 new Tag("code", TagType.Opening),
-                    new Text("some"), new Whitespace(), new Text("code"),
+                    new Text("justCode"),
                 new Tag("code", TagType.Closing),
                 new Whitespace(),
-                new Text("inside"),
-                new Tag("code", TagType.Opening), new Text("word"), new Tag("code", TagType.Closing),
-                new Whitespace(),
-                new Text("evenWith"),
-                new Tag("code", TagType.Opening), new Text("digit"), new Tag("code", TagType.Closing),
+                new Text("orCodeInsideWordWith"),
+                new Tag("code", TagType.Opening),
+                    new Text("digits"),
+                new Tag("code", TagType.Closing),
                 new Text("123"),
             }, paragraph.Elements);
         }
 
+        [Test]
+        public void parse_handlesEmptyCodeBlocks()
+        {
+            var tokenizer = new ParagraphTokenizer("emptyCodeBlock: ``");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Text("emptyCodeBlock:"), 
+                new Whitespace(), 
+                new Tag("code", TagType.Opening),
+                new Tag("code", TagType.Closing),
+            }, paragraph.Elements);
+        }
 
         [Test]
-        public void parse_allowsToUseOtherFormattingTagsOnlyOnWordBorders()
+        public void parse_handlesOtherTags_atWordBordersNearWhitespace()
         {
             var tokenizer = new ParagraphTokenizer(
-                "text_with_numbers_123 text__just__with_underscores " +
-                "__formattingShould lookLikeThis__ " +
-                "_underscoresCanOccur _ in_formatting_");
+                "FormattingCan __startAtAWordBeginning afterAWhitespace and " +
+                "endAtAWordEnd__ beforeAWhitespace.");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Text("FormattingCan"),
+                new Whitespace(),
+                new Tag("strong", TagType.Opening),
+                    new Text("startAtAWordBeginning"),
+                    new Whitespace(),
+                    new Text("afterAWhitespace"),
+                    new Whitespace(),
+                    new Text("and"),
+                    new Whitespace(),
+                    new Text("endAtAWordEnd"),
+                new Tag("strong", TagType.Closing),
+                new Whitespace(),
+                new Text("beforeAWhitespace."),
+            }, paragraph.Elements);
+        }
+
+        [Test]
+        public void parse_handlesOtherTags_atWordBordersNearPunctuation()
+        {
+            var tokenizer = new ParagraphTokenizer(
+                "*__FormattingAlsoCan startAfterAPunctuation and endBeforeAPunctuation__.");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Text("*"), 
+                new Tag("strong", TagType.Opening),
+                    new Text("FormattingAlsoCan"),
+                    new Whitespace(), 
+                    new Text("startAfterAPunctuation"),
+                    new Whitespace(),
+                    new Text("and"),
+                    new Whitespace(),
+                    new Text("endBeforeAPunctuation"), 
+                new Tag("strong", TagType.Closing),
+                new Text("."),
+            }, paragraph.Elements);
+        }
+
+        [Test]
+        public void parse_handlesOtherTags_atWordBordersNearDocumentBeginningAndEnd()
+        {
+            var tokenizer = new ParagraphTokenizer(
+                "__FormattingAlsoCan startAtTheDocumentBeginning__ and __endAtTheEnd.__");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Tag("strong", TagType.Opening),
+                    new Text("FormattingAlsoCan"),
+                    new Whitespace(),
+                    new Text("startAtTheDocumentBeginning"),
+                new Tag("strong", TagType.Closing),
+                new Whitespace(),
+                new Text("and"),
+                new Whitespace(),
+                new Tag("strong", TagType.Opening),
+                    new Text("endAtTheEnd."),
+                new Tag("strong", TagType.Closing),
+            }, paragraph.Elements);
+        }
+
+        [Test]
+        public void parse_ignoresOtherTags_insideWordsFromLettersAndDigits()
+        {
+            var tokenizer = new ParagraphTokenizer(
+                "text_with_numbers_123 text__just__with_underscores");
 
             var elements = tokenizer.Tokenize();
             var paragraph = new MarkupParser(elements).Parse();
@@ -90,22 +187,30 @@ namespace Markdown
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
                 new Text("text_with_numbers_123"), new Whitespace(),
-                new Text("text__just__with_underscores"), new Whitespace(),
-                new Tag("strong", TagType.Opening),
-                    new Text("formattingShould"), new Whitespace(),
-                    new Text("lookLikeThis"),
-                new Tag("strong", TagType.Closing),
-                new Whitespace(), 
-                new Tag("em", TagType.Opening),
-                    new Text("underscoresCanOccur"), new Whitespace(),
-                    new Text("_"), new Whitespace(),
-                    new Text("in_formatting"),
-                new Tag("em", TagType.Closing),
+                new Text("text__just__with_underscores")
             }, paragraph.Elements);
         }
 
         [Test]
-        public void parse_allowsNestedTags()
+        public void parse_ignoresOtherTags_insideCodeBlocks()
+        {
+            var tokenizer = new ParagraphTokenizer("`_trying_ __to format__`");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Tag("code", TagType.Opening),
+                    new Text("_trying_"), new Whitespace(),
+                    new Text("__to"), new Whitespace(),
+                    new Text("format__"),
+                new Tag("code", TagType.Closing),
+            }, paragraph.Elements);
+        }
+
+        [Test]
+        public void parse_handlesNestedTags()
         {
             var tokenizer = new ParagraphTokenizer("_emphasized __strong `code` placed__ here_");
 
@@ -133,26 +238,53 @@ namespace Markdown
         }
 
         [Test]
-        public void parse_insideCodeBlocks_prohibitsFormatting()
+        public void parse_handlesAdjacentTagsSeparatedBySpace()
         {
-            var tokenizer = new ParagraphTokenizer("`_trying_ __to format__`");
+            var tokenizer = new ParagraphTokenizer("_ __ `strongCode` __ _ `codeText`");
 
             var elements = tokenizer.Tokenize();
             var paragraph = new MarkupParser(elements).Parse();
 
             CollectionAssert.AreEqual(new IMarkupElement[]
             {
+                new Tag("em", TagType.Opening), 
+                    new Whitespace(), 
+                    new Tag("strong", TagType.Opening), 
+                        new Whitespace(), 
+                        new Tag("code", TagType.Opening),
+                            new Text("strongCode"),
+                        new Tag("code", TagType.Closing),
+                        new Whitespace(), 
+                    new Tag("strong", TagType.Closing), 
+                    new Whitespace(), 
+                new Tag("em", TagType.Closing), 
+                new Whitespace(),
                 new Tag("code", TagType.Opening),
-                    new Text("_trying_"), new Whitespace(),
-                    new Text("__to"), new Whitespace(),
-                    new Text("format__"),
+                    new Text("codeText"),
                 new Tag("code", TagType.Closing),
             }, paragraph.Elements);
         }
 
+        [Test]
+        public void parse_ignoresDirectlyAdjacentNestedTags()
+        {
+            var tokenizer = new ParagraphTokenizer("_`notEmCode`_");
+
+            var elements = tokenizer.Tokenize();
+            var paragraph = new MarkupParser(elements).Parse();
+
+            CollectionAssert.AreEqual(new IMarkupElement[]
+            {
+                new Text("_"), 
+                new Tag("code", TagType.Opening),
+                    new Text("notEmCode"), 
+                new Tag("code", TagType.Closing),
+                new Text("_"),
+            }, paragraph.Elements);
+        }
 
         [Test]
-        public void parse_insideCodeBlocks_collapsesWhitespaceGroups()
+        public void parse_collapsesWhitespaceGroups_evenInsideCodeBlocks()
         {
             var tokenizer = new ParagraphTokenizer("`  many\t\nwhitespaces\t\t`");
 
