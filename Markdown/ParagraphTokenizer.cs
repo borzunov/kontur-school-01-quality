@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Markdown
 {
@@ -77,6 +75,11 @@ namespace Markdown
 
         public List<IMarkupElement> Tokenize()
         {
+            // CR (krait): Непонятно, зачем инициализация происходит здесь, если Tokenize вызывается не больше одного раза за время жизни объекта.
+            // CR (krait): Если хочется всё-таки обработать этоот случай, можно или кидать InvalidOperationException при попытке повторного вызова,
+            // CR (krait): или просто возвращать закешированный elements.
+            // CR (krait): То же самое можно сделать в MarkupParser.
+
             elements = new List<IMarkupElement>();
             index = 0;
             while (index < source.Length)

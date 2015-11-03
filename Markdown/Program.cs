@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Markdown
 {
@@ -21,7 +17,7 @@ namespace Markdown
                 "    FILENAME    Source file\n" +
                 "\n" +
                 "Converted file will be placed in the program directory.",
-                System.AppDomain.CurrentDomain.FriendlyName
+                AppDomain.CurrentDomain.FriendlyName
             );
         }
 
@@ -43,6 +39,7 @@ namespace Markdown
                 var inputPath = args[0];
                 var markupSource = File.ReadAllText(inputPath);
 
+                // CR (krait): Если документ не сможет распарситься, программа очень некрасиво упадёт. Стоит логгировать не только IOException.
                 var document = new DocumentProcessor(markupSource).Process();
                 var htmlSource = new HtmlFormatter(document).FormatDocument();
 

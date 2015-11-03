@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Markdown
 {
@@ -19,6 +16,7 @@ namespace Markdown
 
         static List<IMarkupElement> StripWhitespaces(List<IMarkupElement> elements)
         {
+            // CR (krait): Лишнее копирование списка, если первый элемент не Whitespace.
             var newElements = (elements[0] is Whitespace ? elements.Skip(1) : elements).ToList();
             if (newElements[newElements.Count - 1] is Whitespace)
                 newElements.RemoveAt(newElements.Count - 1);
@@ -101,8 +99,7 @@ namespace Markdown
                 {
                     if (tag.Name == CodeTagName)
                         codeBlockOpened = !codeBlockOpened;
-                    else
-                    if (codeBlockOpened)
+                    else if (codeBlockOpened)
                     {
                         newElements.Add(RestoreText(tag));
                         continue;

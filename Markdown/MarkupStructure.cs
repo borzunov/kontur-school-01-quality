@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Markdown
 {
+    // CR (krait): Все классы и интерфейсы должны быть в отдельных файлах. Группировать похожие вещи стоит с помощью папок, а не запихивая в один файл.
+
     public interface IMarkupElement { }
 
     public class Text : IMarkupElement

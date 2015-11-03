@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Markdown
+﻿namespace Markdown
 {
     class MarkupTag
     {
@@ -22,11 +16,11 @@ namespace Markdown
     {
         public const char EscapeChar = '\\';
 
-        public static readonly MarkupTag[] MarkupTags = new[]
+        public static readonly MarkupTag[] MarkupTags =
         {
-            new MarkupTag("code", "`"), 
-            new MarkupTag("strong", "__"), 
-            new MarkupTag("em", "_"), 
+            new MarkupTag("code", "`"),
+            new MarkupTag("strong", "__"),
+            new MarkupTag("em", "_"),
         };
     }
 }
