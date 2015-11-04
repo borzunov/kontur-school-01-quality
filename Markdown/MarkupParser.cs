@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Markdown.MarkupStructure;
 
@@ -9,6 +10,7 @@ namespace Markdown
         const string CodeTagName = "code";
 
         readonly List<IMarkupElement> tokens;
+        List<IMarkupElement> elements;
 
         public MarkupParser(List<IMarkupElement> tokens)
         {
@@ -132,7 +134,9 @@ namespace Markdown
 
         public Paragraph Parse()
         {
-            var elements = tokens;
+            if (elements != null)
+                throw new InvalidOperationException("Parse() should be called once");
+            elements = tokens;
             elements = StripWhitespaces(elements);
             elements = SetTagTypes(elements, CodeTagName, false);
             elements = SkipTagsInCodeBlocks(elements);
