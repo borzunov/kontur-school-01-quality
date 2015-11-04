@@ -19,9 +19,12 @@ namespace Markdown
 
         static List<IMarkupElement> StripWhitespaces(List<IMarkupElement> elements)
         {
-            // CR (krait): Лишнее копирование списка, если первый элемент не Whitespace.
-            var newElements = (elements[0] is Whitespace ? elements.Skip(1) : elements).ToList();
-            if (newElements[newElements.Count - 1] is Whitespace)
+            var skipFirst = elements[0] is Whitespace;
+            var skipLast = elements[elements.Count - 1] is Whitespace;
+            if (!skipFirst && !skipLast)
+                return elements;
+            var newElements = (skipFirst ? elements.Skip(1) : elements).ToList();
+            if (skipLast)
                 newElements.RemoveAt(newElements.Count - 1);
             return newElements;
         }
