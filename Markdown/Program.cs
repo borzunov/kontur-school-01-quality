@@ -38,8 +38,7 @@ namespace Markdown
             {
                 var inputPath = args[0];
                 var markupSource = File.ReadAllText(inputPath);
-
-                // CR (krait): Если документ не сможет распарситься, программа очень некрасиво упадёт. Стоит логгировать не только IOException.
+                
                 var document = new DocumentProcessor(markupSource).Process();
                 var htmlSource = new HtmlFormatter(document).FormatDocument();
 

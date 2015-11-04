@@ -97,7 +97,8 @@ namespace Markdown
                     }
                 }
                 if (!parsed)
-                    throw new ArgumentException($"Can't parse string \"{source}\" on position {index}");
+                    throw new InvalidOperationException(
+                        $"Failed to find handler to parse the source at position {index}");
             }
             return elements;
         }
