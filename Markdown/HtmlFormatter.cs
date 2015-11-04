@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Security;
+using Markdown.MarkupStructure;
 
 namespace Markdown
 {

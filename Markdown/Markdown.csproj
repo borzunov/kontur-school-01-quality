@@ -51,9 +51,14 @@
     <Compile Include="HtmlFormatter.cs" />
     <Compile Include="HtmlFormatter_Specification.cs" />
     <Compile Include="MarkupParser_Specification.cs" />
-    <Compile Include="MarkupStructure.cs" />
     <Compile Include="DocumentProcessor.cs" />
     <Compile Include="MarkupParser.cs" />
+    <Compile Include="MarkupStructure\Document.cs" />
+    <Compile Include="MarkupStructure\IMarkupElement.cs" />
+    <Compile Include="MarkupStructure\Paragraph.cs" />
+    <Compile Include="MarkupStructure\Tag.cs" />
+    <Compile Include="MarkupStructure\Text.cs" />
+    <Compile Include="MarkupStructure\Whitespace.cs" />
     <Compile Include="MarkupSyntax.cs" />
     <Compile Include="ParagraphTokenizer_Specification.cs" />
     <Compile Include="Program.cs" />

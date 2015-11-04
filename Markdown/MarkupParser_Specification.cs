@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using Markdown.MarkupStructure;
+using Text = Markdown.MarkupStructure.Text;
 
 namespace Markdown
 {
